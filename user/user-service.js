@@ -43,11 +43,15 @@ class UserService {
     }
 
     async login(email, password) {
-        console.log(email, password)
         const user = await UserModel.findOne({email})
         if (!user) {
             throw ApiError.BadRequest(`Wrong email or password`)
         }
+
+        if (!user.isActivated) {
+            throw ApiError.BadRequest(`Go to email`)
+        }
+
         const isPasswordEqual = await bcrypt.compare(password, user.password)
         if (!isPasswordEqual) {
             throw ApiError.BadRequest('Wrong email or password')
